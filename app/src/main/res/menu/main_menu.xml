@@ -4,7 +4,9 @@
 
     <item
         android:id="@+id/mnuPrefs"
-        android:title="Prefs" />
+        android:checkable="true"
+        android:enabled="true"
+        android:title="Solo ip esterni" />
     <item
         android:id="@+id/mnuAbout"
         android:title="About" />

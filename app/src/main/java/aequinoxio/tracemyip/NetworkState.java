@@ -2,12 +2,12 @@ package aequinoxio.tracemyip;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.format.Formatter;
-import android.util.Log;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -38,7 +38,8 @@ class NetworkState implements NetworkUpdateCallback {
     final String INSERT_VALUES="INSERT INTO IP (ip,interface) values (?,?)";
 
     // Imposto il timestamp in ora locale
-    final String SELECT_VALUES="SELECT datetime(timestamp, 'localtime'),ip, interface FROM IP WHERE interface='External' ORDER BY timestamp DESC";
+    final String SELECT_VALUES_EXTERNAL ="SELECT datetime(timestamp, 'localtime'),ip, interface FROM IP WHERE interface='External' ORDER BY timestamp DESC";
+    final String SELECT_VALUES_ALL="SELECT datetime(timestamp, 'localtime'),ip, interface FROM IP ORDER BY timestamp DESC";
 
    // private List<Interface> allInterfaces;
     private List<NetworkInterface> networkInterfaces;
@@ -63,7 +64,15 @@ class NetworkState implements NetworkUpdateCallback {
 
     public List<DataRow> getData(){
         dataAdapter.open();
-        List<DataRow> temp=dataAdapter.getValues(SELECT_VALUES);
+        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.PREFERENCES_NAME,Context.MODE_PRIVATE);
+        boolean selectType=sharedPreferences.getBoolean(Constants.PREFERENCES_PREF_KEY_EXTERNAL_IP,true);
+        String query;
+        if (selectType){
+            query= SELECT_VALUES_EXTERNAL;
+        }else{
+            query=SELECT_VALUES_ALL;
+        }
+        List<DataRow> temp=dataAdapter.getValues(query);
         dataAdapter.close();
         return temp;
     }
@@ -73,15 +82,13 @@ class NetworkState implements NetworkUpdateCallback {
      */
     public void updateState() {
         try {
-            //networkInterfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
-            // updateIPAddresses();
 
             ExternalIpAsyncTask externalIpAsyncTask = new ExternalIpAsyncTask(this);
             externalIpAsyncTask.execute();
-            String ip = externalIpAsyncTask.get();
-
+           // String ip = externalIpAsyncTask.get();  // Bloccante, commentato per rendere l'app più responsiva
             //callback(ip);
-            Log.e("IP:", ip); // TODO: Eliminare dopo il debug
+
+            //Log.e("IP:", ip); // TODO: Eliminare dopo il debug
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -130,8 +137,6 @@ class NetworkState implements NetworkUpdateCallback {
         dataAdapter.open();
         // Scrivo tutto sul DB. Il timestamp è quello della scrittura e non quello dell'avio del recupero dell'external ip
         for (int i=0;i<ifaces.size();i++){
-//            String insert_query=String.format("INSERT INTO IP (ip,interface) values ('%s','%s')",ifacesIP.get(i),ifaces.get(i));
-//            dataAdapter.insertQuery(insert_query);
             dataAdapter.insertValues(INSERT_VALUES,ifacesIP.get(i),ifaces.get(i));
         }
         dataAdapter.close();
@@ -141,32 +146,6 @@ class NetworkState implements NetworkUpdateCallback {
         LocalBroadcastManager.getInstance(context).sendBroadcast(networkStateIntent);
 
     }
-//
-//    private void updateIPAddresses() {
-//        allInterfaces = new ArrayList<>();
-//        try {
-//            for (NetworkInterface intf : networkInterfaces) {
-//                List<InetAddress> addrs = Collections.list(intf.getInetAddresses());
-//                for (InetAddress addr : addrs) {
-//                    if (!addr.isLoopbackAddress()) {
-//                        String sAddr = addr.getHostAddress();
-//                        //boolean isIPv4 = InetAddressUtils.isIPv4Address(sAddr);
-//                        boolean isIPv4 = sAddr.indexOf(':') < 0;
-//                        if (isIPv4) {
-//                            Interface anInterface = new Interface();
-//                            anInterface.STATE = intf.isUp() ? NetworkStates.CONNECTED : NetworkStates.DISCONNECTED;
-//                            anInterface.NAME = intf.getName();
-//                            anInterface.ADDRESS = sAddr;
-//                            allInterfaces.add(anInterface);
-//                        }
-//                    }
-//                }
-//            }
-//        } catch (SocketException ex) {
-//            Log.e("ERROR**", ex.toString());
-//        } // for now eat exceptions
-//
-//    }
 
 
     public String getNetworkState() {
@@ -223,14 +202,4 @@ class NetworkState implements NetworkUpdateCallback {
 
         return connType;
     }
-
-//    enum NetworkStates {
-//        CONNECTED, CONNECTING, DISCONNECTED
-//    }
-//
-//    class Interface {
-//        String NAME;
-//        NetworkStates STATE;
-//        String ADDRESS;
-//    }
 }

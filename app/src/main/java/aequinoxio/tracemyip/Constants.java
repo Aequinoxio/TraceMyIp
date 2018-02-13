@@ -12,6 +12,9 @@ class Constants {
     public static final String INTENT_OBJECTS_LENGTH = "aequinoxio.network.iobl";
     public static final String INTENT_TIMESTAMP = "aequinoxio.network.ts";
 
+    public static final String PREFERENCES_NAME="aequinoxio.prefs";
+    public static final String PREFERENCES_PREF_KEY_EXTERNAL_IP ="EXTERNAL_IP";
+
     public static final String LOG_FILENAME="log.txt";
 
     public static final int NOTIFICATION_ID = 123443;
