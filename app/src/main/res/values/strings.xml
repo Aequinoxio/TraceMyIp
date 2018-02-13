@@ -2,6 +2,6 @@
     <string name="app_name">Trace My Ip</string>
     <string name="Autore">Gabriele Galluzzo</string>
     <string name="app_desc">Traccia i cambi di indirizzi di tutte le interfacce e determina gli indirizzi pubblici associati al dispositivo</string>
-    <string name="credits">The launcher and notification icons came from http://icons8.it</string>
+    <string name="credits">Un ringraziamento per gli autori e gli artisti del sito http://icon8.it per le icone del launcher e della notifica</string>
     <string name="action_about">Informazioni</string>
 </resources>
