@@ -1,6 +1,7 @@
 package aequinoxio.tracemyip;
 
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,6 +36,7 @@ public class ExternalIpAsyncTask extends AsyncTask <Void, Void, String> {
         networkUpdateCallback.callback(s);
     }
 
+    @NonNull
     private String getPublicIPAddress() {
         StringBuilder sb = new StringBuilder();
         String line;
@@ -51,13 +53,10 @@ public class ExternalIpAsyncTask extends AsyncTask <Void, Void, String> {
             }
             httpURLConnection.disconnect();
 
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         return sb.toString();
-
     }
 }

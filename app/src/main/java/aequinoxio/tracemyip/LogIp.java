@@ -4,20 +4,42 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.drawable.Icon;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
+import android.view.View;
+import android.widget.RelativeLayout;
+
+import java.util.ArrayList;
 
 public class LogIp extends Service {
+    BroadcastReceiver broadcastReceiver;
+
     public LogIp() {
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
+        broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                generateNotification();
+            }
+        };
+
+        // Ogni qualvolta c'è un cambio di stato nelle interfacce aggiorno la notifica
+        IntentFilter intentFilter = new IntentFilter(Constants.NETWORK_AVAILABLE_INTENT);
+        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, intentFilter);
+
     }
 
     @Override
@@ -29,6 +51,7 @@ public class LogIp extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
     }
 
     @Override
@@ -50,13 +73,19 @@ public class LogIp extends Service {
         PendingIntent pi = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
 //Create the Notification
+        String testo="Lastest external ip: "+NetworkState.getInstance(this).getLastestExternalIP();
         Notification notification = new Notification.Builder(this)
                 .setContentTitle("Trace My Ip")
+                //.setTicker("Traccia il mio IP")   // Accessibilità
+                .setShowWhen(true)
+                //.setSubText("----")               // Linea di testo in basso oltre il separatore
                 .setContentIntent(pi)
                 .setAutoCancel(false)
                 .setOngoing(true)
-                //.setContentText(subject)
+                .setContentText(testo)
+                .setTicker(testo)
                 .setSmallIcon(R.drawable.ic_notification)
+                .setStyle(new Notification.BigTextStyle().bigText(testo))
                 .build();
         //.setLargeIcon(aBitmap)
 

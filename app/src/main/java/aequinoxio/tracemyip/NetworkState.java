@@ -3,6 +3,7 @@ package aequinoxio.tracemyip;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
@@ -14,6 +15,7 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
@@ -32,21 +34,36 @@ class NetworkState implements NetworkUpdateCallback {
     private static Timestamp timestamp;
     private boolean isConnected = false;      // Internet connection
     private boolean isAirplaneMode = false;
-    private Context context;
+    private Context context = null;
     DataAdapter dataAdapter;
 
-    final String INSERT_VALUES="INSERT INTO IP (ip,interface) values (?,?)";
+    final String INSERT_VALUES = "INSERT INTO IP (ip,interface) values (?,?)";
 
     // Imposto il timestamp in ora locale
-    final String SELECT_VALUES_EXTERNAL ="SELECT datetime(timestamp, 'localtime'),ip, interface FROM IP WHERE interface='External' ORDER BY timestamp DESC";
-    final String SELECT_VALUES_ALL="SELECT datetime(timestamp, 'localtime'),ip, interface FROM IP ORDER BY timestamp DESC";
+    final String SELECT_VALUES_EXTERNAL = "SELECT datetime(timestamp, 'localtime') as timestamp,ip, interface FROM IP WHERE interface='External' ORDER BY timestamp DESC";
+    final String SELECT_VALUES_ALL = "SELECT datetime(timestamp, 'localtime') as timestamp ,ip, interface FROM IP ORDER BY timestamp DESC";
+    final String SELECT_VALUES_COLUMN_NAME = "timestamp, ip, interface";
 
-   // private List<Interface> allInterfaces;
+    // Query per selezionare solo gli IP
+    final String SELECT_ONLYIP_EXTERNAL = "SELECT distinct ip FROM IP WHERE interface='External' ORDER BY ip ASC";
+    final String SELECT_ONLYIP_ALL = "SELECT distinct ip FROM IP ORDER BY ip ASC";
+    final String SELECT_ONLYIP_COLUMN_NAME = "ip";
+
+    final String SELECT_LASTEST_EXTERNAL = "SELECT datetime(timestamp, 'localtime') as timestamp,ip, interface FROM IP WHERE interface='External' ORDER BY timestamp DESC LIMIT 1";
+
+    // Query per la dialog di dettaglio
+    final String SELECT_IP_FROM_DAY = "SELECT DISTINCT ip from IP where date(timestamp)=? ORDER BY ip ASC";
+    final String SELECT_EXTERNAL_IP_FROM_DAY = "SELECT DISTINCT ip from IP where date(timestamp)=? and interface='External'ORDER BY ip ASC";
+    final String SELECT_DAYS_FROM_IP = "SELECT DISTINCT date(timestamp) as data_semplice from IP where ip=? ORDER BY data_semplice ASC";
+
+    // private List<Interface> allInterfaces;
     private List<NetworkInterface> networkInterfaces;
     private String ExternalIP;
 
     static NetworkState getInstance(Context context) {
-        ourInstance.context = context;
+        if (ourInstance.context == null) {
+            ourInstance.context = context;
+        }
         // Aggiorno il DB creandolo se necessario
         ourInstance.dataAdapter = new DataAdapter(context);
         ourInstance.dataAdapter.createDatabase();
@@ -62,17 +79,70 @@ class NetworkState implements NetworkUpdateCallback {
         }
     }
 
-    public List<DataRow> getData(){
+    public List<String> getDataIpInDay(String day, boolean onlyExternal){
         dataAdapter.open();
-        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.PREFERENCES_NAME,Context.MODE_PRIVATE);
-        boolean selectType=sharedPreferences.getBoolean(Constants.PREFERENCES_PREF_KEY_EXTERNAL_IP,true);
         String query;
-        if (selectType){
-            query= SELECT_VALUES_EXTERNAL;
+        if (onlyExternal){
+            query=SELECT_EXTERNAL_IP_FROM_DAY;
         }else{
-            query=SELECT_VALUES_ALL;
+            query=SELECT_IP_FROM_DAY;
         }
-        List<DataRow> temp=dataAdapter.getValues(query);
+        List<String> temp=dataAdapter.getValues(query, new String[]{day});
+
+        dataAdapter.close();
+        return temp;
+    }
+
+    public List<String> getDataDayForIp(String ip){
+        dataAdapter.open();
+        List<String> temp=dataAdapter.getValues(SELECT_DAYS_FROM_IP, new String[]{ip});
+
+        dataAdapter.close();
+        return temp;
+
+    }
+
+
+    public List<DataRow> getData() {
+        dataAdapter.open();
+        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.PREFERENCES_NAME, Context.MODE_PRIVATE);
+        boolean selectType = sharedPreferences.getBoolean(Constants.PREFERENCES_PREF_KEY_EXTERNAL_IP, true);
+        boolean selectQuery = sharedPreferences.getBoolean(Constants.PREFERENCES_PREF_KEY_ONLY_IP, true);
+        String query;
+        String columns;
+
+        if (selectType) {
+            if (selectQuery) {
+                query = SELECT_ONLYIP_EXTERNAL;
+                columns = SELECT_ONLYIP_COLUMN_NAME;
+            } else {
+                query = SELECT_VALUES_EXTERNAL;
+                columns= SELECT_VALUES_COLUMN_NAME;
+            }
+        } else {
+            if (selectQuery) {
+                query = SELECT_ONLYIP_ALL;
+                columns = SELECT_ONLYIP_COLUMN_NAME;
+            } else {
+                query = SELECT_VALUES_ALL;
+                columns= SELECT_VALUES_COLUMN_NAME;
+            }
+        }
+
+        List<DataRow> temp = dataAdapter.getValues(query, columns);
+        dataAdapter.close();
+        return temp;
+    }
+
+    public String getLastestExternalIP() {
+        String temp;
+        dataAdapter.open();
+        Cursor cursor = dataAdapter.getCursor(SELECT_LASTEST_EXTERNAL);
+        if (cursor.getCount()>0) {
+            temp = String.format("%s (%s)", cursor.getString(cursor.getColumnIndex("ip")), cursor.getString(cursor.getColumnIndex("timestamp")));
+        } else{
+            temp="";
+        }
         dataAdapter.close();
         return temp;
     }
@@ -85,7 +155,7 @@ class NetworkState implements NetworkUpdateCallback {
 
             ExternalIpAsyncTask externalIpAsyncTask = new ExternalIpAsyncTask(this);
             externalIpAsyncTask.execute();
-           // String ip = externalIpAsyncTask.get();  // Bloccante, commentato per rendere l'app più responsiva
+            // String ip = externalIpAsyncTask.get();  // Bloccante, commentato per rendere l'app più responsiva
             //callback(ip);
 
             //Log.e("IP:", ip); // TODO: Eliminare dopo il debug
@@ -136,8 +206,8 @@ class NetworkState implements NetworkUpdateCallback {
 
         dataAdapter.open();
         // Scrivo tutto sul DB. Il timestamp è quello della scrittura e non quello dell'avio del recupero dell'external ip
-        for (int i=0;i<ifaces.size();i++){
-            dataAdapter.insertValues(INSERT_VALUES,ifacesIP.get(i),ifaces.get(i));
+        for (int i = 0; i < ifaces.size(); i++) {
+            dataAdapter.insertValues(INSERT_VALUES, ifacesIP.get(i), ifaces.get(i));
         }
         dataAdapter.close();
 
@@ -181,7 +251,7 @@ class NetworkState implements NetworkUpdateCallback {
                 case ConnectivityManager.TYPE_WIFI:
                     connType = "WIFI";
                     wm = (WifiManager) context.getApplicationContext().getSystemService(WIFI_SERVICE);
-                    if (wm.isWifiEnabled()) {
+                    if (wm != null && wm.isWifiEnabled()) {
                         int ipAddress = wm.getConnectionInfo().getIpAddress();
                         //   String ip = String.format("%d.%d.%d.%d", (ipAddress & 0xff), (ipAddress >> 8 & 0xff), (ipAddress >> 16 & 0xff), (ipAddress >> 24 & 0xff));
                         ip2 = Formatter.formatIpAddress(wm.getConnectionInfo().getIpAddress());

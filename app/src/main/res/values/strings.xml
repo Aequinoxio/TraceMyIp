@@ -4,4 +4,12 @@
     <string name="app_desc">Traccia i cambi di indirizzi di tutte le interfacce e determina gli indirizzi pubblici associati al dispositivo</string>
     <string name="credits">Un ringraziamento per gli autori e gli artisti del sito http://icon8.it per le icone del launcher e della notifica</string>
     <string name="action_about">Informazioni</string>
+    <string name="send_to">Condividi</string>
+    <string name="only_ext_ip">Solo ip esterni</string>
+    <string name="ip_assigned_in_day">Ip assegnati nel giorno</string>
+    <string name="day_assigned_ip">Giorni in cui è stato assegnato l\'IP</string>
+    <string name="DialogDetailTxtData">Data</string>
+    <string name="DialogDetailTxtIp">Ip</string>
+    <string name="DialogDetailDefaultData">1/1/0001</string>
+    <string name="DialogDetailDefaultIp">0.0.0.0</string>
 </resources>

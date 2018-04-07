@@ -3,10 +3,24 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/mnuPrefs"
+        android:id="@+id/mnuOnlyExternalIp"
         android:checkable="true"
         android:enabled="true"
-        android:title="Solo ip esterni" />
+        android:title="Mostra solo ip esterni" />
+    <item
+        android:id="@+id/mnuIPOnly"
+        android:checkable="true"
+        android:enabled="true"
+        android:title="Mostra solo gli ip" />
+    <item
+        android:id="@+id/mnuExportView"
+        android:title="Esporta vista" />
+    <item
+        android:id="@+id/mnuExportDB"
+        android:title="Esporta tutto il DB" />
+    <item
+        android:id="@+id/mnuResetPrefs"
+        android:title="Reset preferences" />
     <item
         android:id="@+id/mnuAbout"
         android:title="About" />

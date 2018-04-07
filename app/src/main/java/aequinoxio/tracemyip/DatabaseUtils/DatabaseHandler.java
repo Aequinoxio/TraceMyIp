@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import aequinoxio.tracemyip.Constants;
+
 public class DatabaseHandler extends SQLiteOpenHelper {
     // Database Version
     private static final int DATABASE_VERSION = 1;
@@ -27,19 +29,24 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     //destination path (location) of our database on device
     private static String DB_PATH = "";
-    private static String DB_NAME ="logIp.db";// Database name
+    private static String DB_NAME = Constants.DBNAME;// Database name
     private SQLiteDatabase mDataBase;
     private final Context mContext;
 
     public DatabaseHandler(Context context) {
         super(context, DB_NAME, null, DATABASE_VERSION);
-        if(android.os.Build.VERSION.SDK_INT >= 17){
-            DB_PATH = context.getApplicationInfo().dataDir + "/databases/";
-        }
-        else
-        {
-            DB_PATH = "/data/data/" + context.getPackageName() + "/databases/";
-        }
+//        if(android.os.Build.VERSION.SDK_INT >= 17){
+//            DB_PATH = context.getApplicationInfo().dataDir + "/databases/";
+//        }
+//        else
+//        {
+//            //DB_PATH = "/data/data/" + context.getPackageName() + "/databases/";
+//            // TODO: Verificare se context.getFilesDir().getPath() ritorna il path completo. In questo caso eliminare context.getPackageName()
+//            DB_PATH = context.getDatabasePath(Constants.DBNAME).getAbsolutePath() ;
+//        }
+
+        // TODO: Attenzione che il metodo getDatabasePath si aspetti un DB già creato!!! DA VERIFICARE
+        DB_PATH = context.getDatabasePath(Constants.DBNAME).getAbsolutePath() ;
         this.mContext = context;
     }
 
@@ -68,7 +75,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     //Check that the database exists here: /data/data/your package/databases/Da Name
     private boolean checkDataBase()
     {
-        File dbFile = new File(DB_PATH + DB_NAME);
+        File dbFile = new File(DB_PATH /*+ DB_NAME*/);
         //Log.v("dbFile", dbFile + "   "+ dbFile.exists());
         return dbFile.exists();
     }
@@ -77,7 +84,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private void copyDataBase() throws IOException
     {
         InputStream mInput = mContext.getAssets().open(DB_NAME);
-        String outFileName = DB_PATH + DB_NAME;
+        String outFileName = DB_PATH /*+ DB_NAME*/;
         OutputStream mOutput = new FileOutputStream(outFileName);
         byte[] mBuffer = new byte[1024];
         int mLength;
@@ -92,7 +99,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     //Open the database, so we can query it
     public boolean openDataBase() throws SQLException
     {
-        String mPath = DB_PATH + DB_NAME;
+        String mPath = DB_PATH /*+ DB_NAME*/;
         //Log.v("mPath", mPath);
         mDataBase = SQLiteDatabase.openDatabase(mPath, null, SQLiteDatabase.CREATE_IF_NECESSARY);
         //mDataBase = SQLiteDatabase.openDatabase(mPath, null, SQLiteDatabase.NO_LOCALIZED_COLLATORS);
