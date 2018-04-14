@@ -87,11 +87,17 @@ public class DataAdapter {
                         case "ip":
                             dr.ip = cursor.getString(cursor.getColumnIndex("ip"));
                             break;
+                        case "data_semplice":
+                            dr.timestamp = cursor.getString(cursor.getColumnIndex("data_semplice"));
+                            break;
                         case "timestamp":
                             dr.timestamp = cursor.getString(cursor.getColumnIndex("timestamp"));
                             break;
                         case "interface":
                             dr.networkInterface = cursor.getString(cursor.getColumnIndex("interface"));
+                            break;
+                        case "counter":
+                            dr.count=Integer.valueOf(cursor.getString(cursor.getColumnIndex("counter")));
                             break;
                     }
                 }

@@ -8,6 +8,7 @@ public class DataRow {
     String timestamp;
     String ip;
     String networkInterface;
+    int    count; // Quanti ip sono  assegnati nel time stamp (<=0 non stampa il valore)
 
     public String getIp(){return ip;}
     public String getData(){return timestamp==null?null:timestamp.split(" ")[0];}
@@ -17,7 +18,15 @@ public class DataRow {
         if (timestamp == null && networkInterface == null) {
             return ip;
         } else {
-            return String.format("%s: %s - %s", timestamp, networkInterface, ip);
+            if (count>0){
+                if (timestamp == null){
+                    return String.format("%s - %s (%d)", networkInterface, ip, count);
+                }else {
+                    return String.format("%s: %s - %s (%d)", timestamp, networkInterface, ip, count);
+                }
+            } else {
+                return String.format("%s: %s - %s", timestamp, networkInterface, ip);
+            }
         }
     }
 
@@ -25,7 +34,7 @@ public class DataRow {
 
        // return String.format("%s\t%s\t%s%n", timestamp, networkInterface, ip);
         if (timestamp == null && networkInterface == null) {
-            return ip;
+            return String.format("%s%n",ip);
         } else {
             return String.format("%s\t%s\t%s%n", timestamp, networkInterface, ip);
         }

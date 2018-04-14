@@ -6,13 +6,29 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-    </style>
 
+        <!--<item name="row_listview">@color/colorAccent</item>-->
+        <!--<item name="row_highlight">@color/colorAccent</item>-->
+        <!--<item name="row_pressed">@color/colorAccent</item>-->
+
+
+        <!-- To change the background of options menu-->
+        <item name="android:itemBackground">@color/colorPrimary</item>
+        <item name="android:navigationBarColor">@android:color/black</item>
+    </style>
 
     <style name="NoTitleDialog" parent="@android:style/Theme.Dialog">
         <item name="android:windowNoTitle">true</item>
-
     </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
 
 </resources>

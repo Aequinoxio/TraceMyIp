@@ -55,6 +55,7 @@ public class ExternalIpAsyncTask extends AsyncTask <Void, Void, String> {
 
         } catch (IOException e) {
             e.printStackTrace();
+            sb.append("External connection error");
         }
 
         return sb.toString();

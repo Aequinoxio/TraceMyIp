@@ -58,8 +58,14 @@ public class DetailDialog extends DialogFragment {
         mActivity = getActivity();
 
         Bundle mArgs = getArguments();
-        paramData = mArgs.getString(Constants.DIALOG_PARAM_DATA).trim();
-        paramIP = mArgs.getString(Constants.DIALOG_PARAM_IP).trim();
+        paramData = mArgs.getString(Constants.DIALOG_PARAM_DATA);
+        if (paramData!=null){
+            paramData=paramData.trim();
+        }
+        paramIP = mArgs.getString(Constants.DIALOG_PARAM_IP);
+        if (paramIP!=null){
+            paramIP=paramIP.trim();
+        }
 
         View v = getActivity().getLayoutInflater().inflate(R.layout.detail_dialog, null);
         mListViewData = v.findViewById(R.id.lstDaysForIp);
