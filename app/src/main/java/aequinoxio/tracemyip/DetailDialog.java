@@ -130,23 +130,4 @@ public class DetailDialog extends DialogFragment {
     public void updateListView(boolean checked){
         updateValues(paramIP, paramData, checked);
     }
-// Questo metodo deve stare nella classe che lancia il dialog.
-//    public void ckExternalIp(View view) {
-//        // Is the view now checked?
-//        boolean checked = ((CheckBox) view).isChecked();
-//
-//        // Check which checkbox was clicked
-//        switch (view.getId()) {
-//            case R.id.ckbDialogExIp:
-//                if (checked) {
-//
-//                }
-//                // Put some meat on the sandwich
-//                else
-//                    // Remove the meat
-//                    break;
-//                // TODO: Veggie sandwich
-//        }
-//
-//    }
 }

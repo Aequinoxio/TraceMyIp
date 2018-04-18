@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
         NetworkState networkState = NetworkState.getInstance(this);
         networkState.updateState();
 
-        if (!isMyServiceRunning(LogIp.class)) {
+        if (!Utilities.getInstance().isMyServiceRunning(context,LogIp.class)) {
             Intent intent = new Intent(this, LogIp.class);
             startService(intent);
         }
@@ -216,40 +216,14 @@ public class MainActivity extends AppCompatActivity {
                 fileUri = Uri.fromFile(new File(savePath));
                 mResultIntent = new Intent(Intent.ACTION_SEND);
                 if (fileUri != null) {
-                    // Put the Uri and MIME type in the result Intent
-//                    mResultIntent.setDataAndType(
-//                            fileUri,
-//                            getContentResolver().getType(fileUri));
 
                     mResultIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
                     mResultIntent.setType("*/*");
                     mResultIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
                     startActivity(Intent.createChooser(mResultIntent, getResources().getText(R.string.send_to)));
-                    // Set the result
-//                    MainActivity.this.setResult(Activity.RESULT_OK,
-//                            mResultIntent);
                 }
-//                else {
-//                    mResultIntent.setDataAndType(null, "");
-//                    MainActivity.this.setResult(RESULT_CANCELED,
-//                            mResultIntent);
-//                }
 
-
-//                new AlertDialog.Builder(MainActivity.this)
-//                        .setTitle(R.string.action_about)
-//                        .setMessage("Salvato in: " + savePath)
-//                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-//                            public void onClick(DialogInterface dialog, int id) {
-//                                dialog.cancel();
-//                            }
-//                        }).show();
-
-
-//                Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-//                i.addCategory(Intent.CATEGORY_DEFAULT);
-//                startActivityForResult(Intent.createChooser(i, "Choose directory"), Constants.DIRECTORY_CHOOSER_INTENT_ID);
                 break;
 
             case R.id.mnuExportDB:
@@ -307,7 +281,7 @@ public class MainActivity extends AppCompatActivity {
 //
 
     private void exportAllDB() {
-        // TODO: Spostarlo nelle constants. Verificare come recuperare il contesto
+        // TODO: Se possibile spostarlo nelle constants. Verificare come recuperare il contesto
         String DB_PATH = context.getDatabasePath(Constants.DBNAME).getAbsolutePath();
         //File DOWNLOAD_FOLDER = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
         File DB_source = new File(DB_PATH);
@@ -417,10 +391,6 @@ public class MainActivity extends AppCompatActivity {
         File sd = new File(Constants.EXTERNAL_SD_SAVEPATH);
         File fileSalvataggio;
         SimpleDateFormat ft = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
-
-        // TODO: Costante estensione cablata
-        //String FILENAME_GIORNALIERO = ft.format(date) + ".txt";
-        //String FILENAME_GIORNALIERO = "export.csv";
 
         // Provo a creare la directory sulla sd
         boolean successCreaDir = true;
@@ -561,15 +531,15 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private boolean isMyServiceRunning(Class<?> serviceClass) {
-        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (serviceClass.getName().equals(service.service.getClassName())) {
-                return true;
-            }
-        }
-        return false;
-    }
+//    private boolean isMyServiceRunning(Class<?> serviceClass) {
+//        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+//        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+//            if (serviceClass.getName().equals(service.service.getClassName())) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
 
     private void resetPreferences() {
         SharedPreferences sharedPreferences = this.getSharedPreferences(Constants.PREFERENCES_NAME, MODE_PRIVATE);

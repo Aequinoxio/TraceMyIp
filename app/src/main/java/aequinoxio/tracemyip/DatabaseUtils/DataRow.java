@@ -1,5 +1,7 @@
 package aequinoxio.tracemyip.DatabaseUtils;
 
+import java.util.Locale;
+
 /**
  * Created by utente on 11/02/2018.
  */
@@ -20,12 +22,12 @@ public class DataRow {
         } else {
             if (count>0){
                 if (timestamp == null){
-                    return String.format("%s - %s (%d)", networkInterface, ip, count);
+                    return String.format(Locale.getDefault(),"%s - %s (%d)", networkInterface, ip, count);
                 }else {
-                    return String.format("%s: %s - %s (%d)", timestamp, networkInterface, ip, count);
+                    return String.format(Locale.getDefault(),"%s: %s - %s (%d)", timestamp, networkInterface, ip, count);
                 }
             } else {
-                return String.format("%s: %s - %s", timestamp, networkInterface, ip);
+                return String.format(Locale.getDefault(),"%s: %s - %s", timestamp, networkInterface, ip);
             }
         }
     }

@@ -121,7 +121,8 @@ class NetworkState implements NetworkUpdateCallback {
         String query;
         String columns;
 
-        // TODO: da implementare. occorre rivedere anche come l'oggetto DataRow deve funzionare
+        // TODO: In futuro va implementata una ottimizzazione per rendere più flessibile la generazione degli oggetti
+        // e rivedere anche come l'oggetto DataRow deve funzionare
         if (selectDistroQuery) {
             if (selectQuery){
                 query = selectType ? SELECT_EXTERNAL_IP_COUNT:SELECT_ALL_IP_COUNT ;
@@ -180,7 +181,7 @@ class NetworkState implements NetworkUpdateCallback {
             // String ip = externalIpAsyncTask.get();  // Bloccante, commentato per rendere l'app più responsiva
             //callback(ip);
 
-            //Log.e("IP:", ip); // TODO: Eliminare dopo il debug
+            //Log.e("IP:", ip); // Eliminare dopo il debug
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -196,11 +197,11 @@ class NetworkState implements NetworkUpdateCallback {
         ArrayList<String> ifacesIP = new ArrayList<>();
         Intent networkStateIntent = new Intent(Constants.NETWORK_AVAILABLE_INTENT);
 
-        networkStateIntent.putExtra(Constants.INTENT_OBJECTS_LENGTH, 1); // TODO: FIXIT
-        networkStateIntent.putExtra(Constants.IS_NETWORK_AVAILABLE_DETAIL_INTENT, true); // TODO: FIXIT
-        networkStateIntent.putExtra(Constants.INTENT_TIMESTAMP, timestamp.toString()); // TODO: FIXIT
+        networkStateIntent.putExtra(Constants.INTENT_OBJECTS_LENGTH, 1); //
+        networkStateIntent.putExtra(Constants.IS_NETWORK_AVAILABLE_DETAIL_INTENT, true);
+        networkStateIntent.putExtra(Constants.INTENT_TIMESTAMP, timestamp.toString());
         for (NetworkInterface networkInterface : networkInterfaces) {
-            // TODO: Ogni interfaccia ha una lista di indirizzi. filtrare gli IPV4
+            // Ogni interfaccia ha una lista di indirizzi. filtrare gli IPV4
             ifaces.add(networkInterface.getDisplayName());
             Enumeration<InetAddress> addressEnumeration = networkInterface.getInetAddresses();
             InetAddress inetAddress;
@@ -233,8 +234,8 @@ class NetworkState implements NetworkUpdateCallback {
         }
         dataAdapter.close();
 
-        networkStateIntent.putStringArrayListExtra(Constants.NETWORK_INTERFACE_NAME_DETAIL_INTENT, ifaces); // TODO: FIXIT
-        networkStateIntent.putStringArrayListExtra(Constants.NETWORK_INTERFACE_IP_DETAIL_INTENT, ifacesIP); // TODO: FIXIT
+        networkStateIntent.putStringArrayListExtra(Constants.NETWORK_INTERFACE_NAME_DETAIL_INTENT, ifaces);
+        networkStateIntent.putStringArrayListExtra(Constants.NETWORK_INTERFACE_IP_DETAIL_INTENT, ifacesIP);
         LocalBroadcastManager.getInstance(context).sendBroadcast(networkStateIntent);
 
     }

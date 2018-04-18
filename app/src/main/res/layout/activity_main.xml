@@ -18,11 +18,11 @@
 
         <TextView
             android:id="@+id/txtWaitLoading"
-            android:layout_width="352dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/pbWaitLoading"
             android:layout_alignParentEnd="true"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="0dp"
             android:layout_marginStart="0dp"
             android:background="@color/colorPrimaryDark"
             android:text="Determino l'ip pubblico"
@@ -69,6 +69,7 @@
             android:layout_height="match_parent"
             android:layout_margin="8dp"
             android:paddingLeft="0dp"
+            android:theme="@style/AppTheme.NoActionBar"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
