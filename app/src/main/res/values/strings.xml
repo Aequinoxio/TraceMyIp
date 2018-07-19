@@ -2,7 +2,7 @@
     <string name="app_name">Trace My Ip</string>
     <string name="Autore">Gabriele Galluzzo</string>
     <string name="app_desc">Traccia i cambi di indirizzi di tutte le interfacce e determina gli indirizzi pubblici associati al dispositivo</string>
-    <string name="credits">Un ringraziamento per gli autori e gli artisti del sito http://icon8.it per le icone del launcher e della notifica</string>
+    <string name="credits">Un ringraziamento per gli autori e gli artisti del sito http://icons8.it per le icone del launcher e della notifica</string>
     <string name="action_about">Informazioni</string>
     <string name="send_to">Condividi</string>
     <string name="only_ext_ip">Solo ip esterni</string>
@@ -24,4 +24,7 @@
     <string name="title_activity_main_tabbed">MainActivityTabbed</string>
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
+    <string name="channel_ID">TraceMyIP12345</string>
+    <string name="channel_name">TraceMyIpNotificationChannel</string>
+    <string name="channel_description">The channel for the notifications of Trace my IP app</string>
 </resources>

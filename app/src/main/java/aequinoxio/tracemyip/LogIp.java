@@ -1,6 +1,7 @@
 package aequinoxio.tracemyip;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -10,8 +11,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.drawable.Icon;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
@@ -72,9 +76,20 @@ public class LogIp extends Service {
         PendingIntent pi = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
 //Create the Notification
-        String testo="Lastest external ip: "+NetworkState.getInstance(this).getLastestExternalIP();
-        Notification notification = new Notification.Builder(this)
-                .setContentTitle("Trace My Ip")
+        String testo="Latest external ip: "+NetworkState.getInstance(this).getLastestExternalIP();
+
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, getString(R.string.channel_ID));
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Constants.getInstance().createNotificationChannel(this);
+
+           // notificationBuilder = new Notification.Builder(this, "");
+        } else{
+            //notificationBuilder = new Notification.Builder(this);
+            //notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        }
+        //Notification notification = new Notification.Builder(this)
+        Notification notification = notificationBuilder.setContentTitle("Trace My Ip")
                 //.setTicker("Traccia il mio IP")   // Accessibilità
                 .setShowWhen(true)
                 //.setSubText("----")               // Linea di testo in basso oltre il separatore
@@ -84,13 +99,18 @@ public class LogIp extends Service {
                 .setContentText(testo)
                 .setTicker(testo)
                 .setSmallIcon(R.drawable.ic_notification)
-                .setStyle(new Notification.BigTextStyle().bigText(testo))
+               // .setStyle(new Notification.BigTextStyle().bigText(testo))
                 .build();
         //.setLargeIcon(aBitmap)
 
 //Display the Notification
-        NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        nm.notify(Constants.NOTIFICATION_ID, notification);  //ID_HELLO_WORLD is a int ID
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
 
+        //NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+       // nm.notify(Constants.NOTIFICATION_ID, notification);  //ID_HELLO_WORLD is a int ID
+        //NotificationManagerCompat nm = NotificationManagerCompat.from(this);
+        notificationManager.notify(Constants.NOTIFICATION_ID, notification);
     }
+
+
 }
