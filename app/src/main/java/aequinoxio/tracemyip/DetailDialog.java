@@ -5,38 +5,29 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 import java.util.List;
-
-import aequinoxio.tracemyip.DatabaseUtils.DataRow;
 
 /**
  * Created by utente on 17/03/2018.
  */
 
 public class DetailDialog extends DialogFragment {
-    Activity mActivity;
-    ListView mListViewIP;
-    ListView mListViewData;
-    String paramData ;
-    String paramIP ;
+    private Activity mActivity;
+    private ListView mListViewIP;
+    private ListView mListViewData;
+    private String paramData ;
+    private String paramIP ;
 
 
     @Override
@@ -49,8 +40,7 @@ public class DetailDialog extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
 
-        View view = super.onCreateView(inflater, container, savedInstanceState);
-        return view;
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     @Override

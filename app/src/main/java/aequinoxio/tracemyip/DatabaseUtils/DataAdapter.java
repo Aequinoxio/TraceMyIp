@@ -16,14 +16,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DataAdapter {
-    protected static final String TAG = "DataAdapter";
+    private static final String TAG = "DataAdapter";
 
-    private final Context mContext;
     private SQLiteDatabase sqLiteDatabase;
     private DatabaseHandler databaseHandler;
 
     public DataAdapter(Context context) {
-        this.mContext = context;
+        Context mContext = context;
         databaseHandler = new DatabaseHandler(mContext);
     }
 

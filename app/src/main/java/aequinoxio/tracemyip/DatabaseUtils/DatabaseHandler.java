@@ -25,11 +25,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     // Labels table name
     //private static final String TABLE_LIVELLI = "livelli";
 
-    private static String TAG = "DataBaseHandler"; // Tag just for the LogCat window
+    private static final String TAG = "DataBaseHandler"; // Tag just for the LogCat window
 
     //destination path (location) of our database on device
     private static String DB_PATH = "";
-    private static String DB_NAME = Constants.DBNAME;// Database name
+    private static final String DB_NAME = Constants.DBNAME;// Database name
     private SQLiteDatabase mDataBase;
     private final Context mContext;
 

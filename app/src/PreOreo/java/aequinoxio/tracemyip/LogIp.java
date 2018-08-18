@@ -1,29 +1,19 @@
 package aequinoxio.tracemyip;
 
 import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.drawable.Icon;
-import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
-import android.view.View;
-import android.widget.RelativeLayout;
 
-import java.util.ArrayList;
-
+// Servizio per gestire le notifiche
 public class LogIp extends Service {
     BroadcastReceiver broadcastReceiver;
 

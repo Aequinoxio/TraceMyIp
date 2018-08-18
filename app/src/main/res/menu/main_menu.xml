@@ -8,29 +8,29 @@
         android:checkable="true"
         android:checked="false"
         android:enabled="true"
-        android:title="Mostra solo ip esterni" />
+        android:title="@string/mostra_solo_ip_esterni" />
     <item
         android:id="@+id/mnuIPOnly"
         android:checkable="true"
         android:enabled="true"
         android:checked="false"
-        android:title="Mostra solo gli ip" />
+        android:title="@string/mostra_solo_gli_ip" />
     <item
         android:id="@+id/mnuDistroIp"
         android:checkable="true"
         android:enabled="true"
         android:checked="false"
-        android:title="Mostra gli ip assegnati per data" />
+        android:title="@string/mostra_gli_ip_assegnati_per_data" />
     <item
         android:id="@+id/mnuExportView"
-        android:title="Esporta vista" />
+        android:title="@string/esporta_vista" />
     <item
         android:id="@+id/mnuExportDB"
-        android:title="Esporta tutto il DB" />
+        android:title="@string/esporta_tutto_il_db" />
     <item
         android:id="@+id/mnuResetPrefs"
-        android:title="Reset preferences" />
+        android:title="@string/reset_preferences" />
     <item
         android:id="@+id/mnuAbout"
-        android:title="About" />
+        android:title="@string/about" />
 </menu>

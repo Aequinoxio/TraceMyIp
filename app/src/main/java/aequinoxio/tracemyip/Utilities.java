@@ -1,6 +1,8 @@
 package aequinoxio.tracemyip;
 
 import android.app.ActivityManager;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
 import android.content.Context;
 
 class Utilities {
@@ -14,6 +16,21 @@ class Utilities {
             }
         }
         return false;
+    }
+
+    public boolean isMyJobServiceRunning (Context context, int JOB_ID){
+        JobScheduler scheduler = (JobScheduler) context.getSystemService( Context.JOB_SCHEDULER_SERVICE ) ;
+
+        boolean hasBeenScheduled = false ;
+
+        for ( JobInfo jobInfo : scheduler.getAllPendingJobs() ) {
+            if ( jobInfo.getId() == JOB_ID ) {
+                hasBeenScheduled = true ;
+                break ;
+            }
+        }
+
+        return hasBeenScheduled ;
     }
 
 

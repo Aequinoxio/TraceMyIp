@@ -30,11 +30,10 @@ import static android.content.Context.WIFI_SERVICE;
 
 class NetworkState implements NetworkUpdateCallback {
     private static final NetworkState ourInstance = new NetworkState();
-    private static Timestamp timestamp;
     private boolean isConnected = false;      // Internet connection
     private boolean isAirplaneMode = false;
-    private Context context = null;
-    DataAdapter dataAdapter;
+    private Context context = null;             // TODO: Eliminare e passarlo come parametro in tutti metodi dove serve
+    private DataAdapter dataAdapter;
 
     static final String INSERT_VALUES = "INSERT INTO IP (ip,interface) values (?,?)";
 
@@ -66,7 +65,6 @@ class NetworkState implements NetworkUpdateCallback {
 
 
     private List<NetworkInterface> networkInterfaces;
-    private String ExternalIP;
 
     static NetworkState getInstance(Context context) {
         if (ourInstance.context == null) {
@@ -190,8 +188,8 @@ class NetworkState implements NetworkUpdateCallback {
 
     @Override
     public void callback(Object o) {
-        ExternalIP = o.toString();
-        timestamp = new Timestamp(System.currentTimeMillis());
+        String externalIP = o.toString();
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
         ArrayList<String> ifaces = new ArrayList<>();
         ArrayList<String> ifacesIP = new ArrayList<>();
@@ -225,7 +223,7 @@ class NetworkState implements NetworkUpdateCallback {
         }
 
         ifaces.add("External");
-        ifacesIP.add(ExternalIP);
+        ifacesIP.add(externalIP);
 
         dataAdapter.open();
         // Scrivo tutto sul DB. Il timestamp è quello della scrittura e non quello dell'avio del recupero dell'external ip
@@ -237,7 +235,6 @@ class NetworkState implements NetworkUpdateCallback {
         networkStateIntent.putStringArrayListExtra(Constants.NETWORK_INTERFACE_NAME_DETAIL_INTENT, ifaces);
         networkStateIntent.putStringArrayListExtra(Constants.NETWORK_INTERFACE_IP_DETAIL_INTENT, ifacesIP);
         LocalBroadcastManager.getInstance(context).sendBroadcast(networkStateIntent);
-
     }
 
 

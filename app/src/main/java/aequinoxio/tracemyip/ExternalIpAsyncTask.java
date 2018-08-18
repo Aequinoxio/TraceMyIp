@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
@@ -17,7 +16,7 @@ import java.net.URL;
 
 public class ExternalIpAsyncTask extends AsyncTask <Void, Void, String> {
 
-    NetworkUpdateCallback networkUpdateCallback;
+    private NetworkUpdateCallback networkUpdateCallback;
 
     @Override
     protected String doInBackground(Void... voids) {
