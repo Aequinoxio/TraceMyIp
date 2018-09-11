@@ -28,7 +28,8 @@ public class LogIp extends JobService {
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                generateNotification();
+                //generateNotification();
+                Utilities.getInstance().generateNotification(LogIp.this);
                 Log.d(TAG ,"OnBroadcastReceiver");
                 jobFinished(params,true);
             }
@@ -108,6 +109,8 @@ public class LogIp extends JobService {
 //        return null; // Nessun binding
 //    }
 
+   /*
+   // Sostituito con un metodo analogo nella classe Utilities
     private Notification generateNotification(){
         //Log.v("LogIP","GenerateNotification");
 
@@ -156,6 +159,6 @@ public class LogIp extends JobService {
         notificationManager.notify(Constants.NOTIFICATION_ID, notification);
         return notification;
     }
-
+*/
 
 }

@@ -226,7 +226,7 @@ class NetworkState implements NetworkUpdateCallback {
         ifacesIP.add(externalIP);
 
         dataAdapter.open();
-        // Scrivo tutto sul DB. Il timestamp è quello della scrittura e non quello dell'avio del recupero dell'external ip
+        // Scrivo tutto sul DB. Il timestamp è quello della scrittura e non quello dell'avvio del recupero dell'external ip
         for (int i = 0; i < ifaces.size(); i++) {
             dataAdapter.insertValues(INSERT_VALUES, ifacesIP.get(i), ifaces.get(i));
         }

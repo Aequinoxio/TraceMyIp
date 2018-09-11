@@ -104,6 +104,11 @@ public class MainActivity extends AppCompatActivity {
 
                 }
                 updateListView();
+
+                // Aggiornamento notifica
+                Utilities.getInstance().generateNotification(context);
+
+                // Aggiornamento listview con swipe verso il basso
                 RelativeLayout relativeLayout = findViewById(R.id.relativeLayout);
                 relativeLayout.setVisibility(View.GONE);
 
@@ -530,7 +535,7 @@ public class MainActivity extends AppCompatActivity {
 
                 DataRow dataRow = (DataRow) arg0.getItemAtPosition(pos);
 
-                // Passo iparametri
+                // Passo i parametri
                 Bundle args = new Bundle();
                 args.putString(Constants.DIALOG_PARAM_IP, dataRow.getIp());
                 args.putString(Constants.DIALOG_PARAM_DATA, dataRow.getData());
@@ -543,6 +548,8 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+
+
     }
 
     public void ckExternalIp(View view) {
