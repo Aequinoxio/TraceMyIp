@@ -19,6 +19,8 @@
     <string name="reset_preferences">Reset delle preferenze</string>
     <string name="reset_preferences_conferma">Vuoi veramente ripristinare le preferenze ai valori di default?</string>
     <string name="export_DB_Confirm_toast">Copiato in%n%s</string>
+    <string name="export_DB_Confirmed_copy_dialog">Copiato %n%s</string>
+    <string name="export_DB_Confirm_dialog">%n%s</string>
     <string name="export_DB_Error_toast">Errore: %s</string>
     <string name="export_DB_PermissionError_toast">Export impossibile senza il permesso</string>
     <string name="action_settings">Settings</string>
@@ -31,6 +33,7 @@
     <string name="mostra_solo_gli_ip">Mostra solo gli ip</string>
     <string name="mostra_gli_ip_assegnati_per_data">Mostra gli ip assegnati per data</string>
     <string name="esporta_vista">Esporta vista</string>
-    <string name="esporta_tutto_il_db">Esporta tutto il DB</string>
+    <string name="salva_tutto_il_db">Salva tutto il DB</string>
     <string name="about">About</string>
+    <string name="salvataggio_db_dialog">Salvataggio DB</string>
 </resources>

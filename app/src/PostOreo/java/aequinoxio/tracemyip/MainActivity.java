@@ -2,6 +2,7 @@ package aequinoxio.tracemyip;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.BroadcastReceiver;
@@ -14,6 +15,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -26,6 +28,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
@@ -54,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Context context;
     private BroadcastReceiver broadcastReceiver;
-    private DetailDialog detailDialog;
+    private DetailDialog detailDialog = new DetailDialog();;
     //final File DB_destination = new File(Constants.EXTERNAL_SD_SAVEPATH, Constants.DBNAME);
 
     @Override
@@ -85,6 +88,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Workaround x il problema di apertura file con provider file://
+        // TODO: Utilizzare in futuro un provider personalizzato e content://
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
+
         this.context = this;
 
         IntentFilter intentFilter = new IntentFilter(Constants.NETWORK_AVAILABLE_INTENT);
@@ -114,7 +122,6 @@ public class MainActivity extends AppCompatActivity {
 
                 SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.swiperefresh);
                 swipeRefreshLayout.setRefreshing(false);
-
             }
         };
 
@@ -182,13 +189,18 @@ public class MainActivity extends AppCompatActivity {
     public boolean onPrepareOptionsMenu(Menu menu) {
         SharedPreferences sharedPreferences = this.getSharedPreferences(Constants.PREFERENCES_NAME, MODE_PRIVATE);
 
-        boolean checkMenu = sharedPreferences.getBoolean(Constants.PREFERENCES_PREF_KEY_EXTERNAL_IP, false);
+        boolean checkMenu = sharedPreferences.getBoolean(Constants.PREFERENCES_PREF_KEY_EXTERNAL_IP, Constants.PREFERENCES_PREF_KEY_EXTERNAL_IP_default);
         MenuItem menuItem = menu.findItem(R.id.mnuOnlyExternalIp);
         menuItem.setChecked(checkMenu);
 
-        checkMenu = sharedPreferences.getBoolean(Constants.PREFERENCES_PREF_KEY_ONLY_IP, false);
+        checkMenu = sharedPreferences.getBoolean(Constants.PREFERENCES_PREF_KEY_ONLY_IP, Constants.PREFERENCES_PREF_KEY_ONLY_IP_default);
         menuItem = menu.findItem(R.id.mnuIPOnly);
         menuItem.setChecked(checkMenu);
+
+        checkMenu = sharedPreferences.getBoolean(Constants.PREFERENCES_PREF_KEY_DISTRO_IP, Constants.PREFERENCES_PREF_KEY_DISTRO_IP_default);
+        menuItem = menu.findItem(R.id.mnuDistroIp);
+        menuItem.setChecked(checkMenu);
+
 
         return super.onPrepareOptionsMenu(menu);
     }
@@ -265,10 +277,20 @@ public class MainActivity extends AppCompatActivity {
             case R.id.mnuExportDB:
                 if (checkAndRequestPermission()) {
                   //  final File DB_destination = new File(Constants.EXTERNAL_SD_SAVEPATH, Constants.DBNAME);
+                    // Check esistenza directory ed eventuale creazione
+                    if (!Constants.DB_destination_directory.exists()){
+                        Constants.DB_destination_directory.mkdir();
+                    }
+
+                    // Check esistenza file
                     if (Constants.DB_destination.exists()) {
+                        String messageStr=new StringBuilder().append(getString(R.string.sovrascrivo_file))
+                                //.append("\n")
+                                .append(String.format(getString(R.string.export_DB_Confirm_dialog),Constants.DB_destination.getAbsolutePath()))
+                                .toString();
                         new AlertDialog.Builder(MainActivity.this)
-                                .setTitle(R.string.conferma)
-                                .setMessage(R.string.sovrascrivo_file)
+                                .setTitle(R.string.salvataggio_db_dialog)
+                                .setMessage(messageStr)
                                 .setNegativeButton(R.string.annulla, new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
                                         dialog.cancel();
@@ -330,23 +352,60 @@ public class MainActivity extends AppCompatActivity {
             source.close();
             destination.close();
 
-            Uri fileUri;
-            Intent mResultIntent;
+           // Toast.makeText(this, String.format(getString(R.string.export_DB_Confirm_toast),Constants.EXTERNAL_SD_SAVEPATH), Toast.LENGTH_LONG).show();
 
-            fileUri = Uri.fromFile(Constants.DB_destination);
-            mResultIntent = new Intent(Intent.ACTION_SEND);
-            if (fileUri != null) {
-                // Put the Uri and MIME type in the result Intent
+            // Alert dialog
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);//, R.style.Theme_AppCompat_NoActionBar);
 
-                mResultIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
-                mResultIntent.setType("*/*");
-                mResultIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            builder.setMessage(String.format(getString(R.string.export_DB_Confirmed_copy_dialog),Constants.DB_destination.getAbsolutePath()))
+                    .setTitle(R.string.salvataggio_db_dialog)
+                    .setNegativeButton("Chiudi", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    })
+                    .setNeutralButton("Condividi", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Uri fileUri;
+                            Intent mResultIntent;
 
-                startActivity(Intent.createChooser(mResultIntent, getResources().getText(R.string.send_to)));
-            }
+                            fileUri = Uri.fromFile(Constants.DB_destination);
+                            mResultIntent = new Intent(Intent.ACTION_SEND);
+                            if (fileUri != null) {
+                                // Put the Uri and MIME type in the result Intent
+
+                                mResultIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
+                                mResultIntent.setType("*/*");
+                                mResultIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+                                startActivity(Intent.createChooser(mResultIntent, getResources().getText(R.string.send_to)));
+                            }
+
+                        }
+                    });
+
+            builder.show();
 
 
-            Toast.makeText(this, String.format(getString(R.string.export_DB_Confirm_toast),Constants.EXTERNAL_SD_SAVEPATH), Toast.LENGTH_LONG).show();
+//            new AlertDialog.Builder(MainActivity.this)
+//                    .setTitle(R.string.conferma)
+//                    .setMessage(R.string.sovrascrivo_file)
+//                    .setNegativeButton(R.string.annulla, new DialogInterface.OnClickListener() {
+//                        public void onClick(DialogInterface dialog, int id) {
+//                            dialog.cancel();
+//                        }
+//                    })
+//                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+//                        public void onClick(DialogInterface dialog, int id) {
+//                            exportAllDB();
+//                        }
+//                    })
+//                    .show();
+
+            /////
+
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             Toast.makeText(this, String.format(getString(R.string.export_DB_Error_toast),e.getMessage()), Toast.LENGTH_LONG).show();
@@ -488,7 +547,7 @@ public class MainActivity extends AppCompatActivity {
         menuInflater.inflate(R.menu.main_menu, menu);
 
         SharedPreferences sharedPreferences = this.getSharedPreferences(Constants.PREFERENCES_NAME, MODE_PRIVATE);
-        boolean showExternam = sharedPreferences.getBoolean(Constants.PREFERENCES_PREF_KEY_EXTERNAL_IP, true);
+        boolean showExternam = sharedPreferences.getBoolean(Constants.PREFERENCES_PREF_KEY_EXTERNAL_IP, Constants.PREFERENCES_PREF_KEY_EXTERNAL_IP_default);
         MenuItem menuItem = menu.findItem(R.id.mnuOnlyExternalIp);
         if (showExternam) {
             menuItem.setChecked(true);
@@ -496,7 +555,7 @@ public class MainActivity extends AppCompatActivity {
             menuItem.setChecked(false);
         }
 
-        boolean distroIpData = sharedPreferences.getBoolean(Constants.PREFERENCES_PREF_KEY_DISTRO_IP, true);
+        boolean distroIpData = sharedPreferences.getBoolean(Constants.PREFERENCES_PREF_KEY_DISTRO_IP, Constants.PREFERENCES_PREF_KEY_DISTRO_IP_default);
         menuItem = menu.findItem(R.id.mnuDistroIp);
         if (distroIpData) {
             menuItem.setChecked(true);
@@ -531,7 +590,7 @@ public class MainActivity extends AppCompatActivity {
 //                }
 
                 //Log.v("long clicked","pos: " + pos);
-                detailDialog = new DetailDialog();
+                //detailDialog = new DetailDialog();
 
                 DataRow dataRow = (DataRow) arg0.getItemAtPosition(pos);
 
@@ -579,9 +638,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void resetPreferences() {
         SharedPreferences sharedPreferences = this.getSharedPreferences(Constants.PREFERENCES_NAME, MODE_PRIVATE);
-        sharedPreferences.edit().putBoolean(Constants.PREFERENCES_PREF_KEY_EXTERNAL_IP, false).apply();
-        sharedPreferences.edit().putBoolean(Constants.PREFERENCES_PREF_KEY_ONLY_IP, false).apply();
-        sharedPreferences.edit().putBoolean(Constants.PREFERENCES_PREF_KEY_DISTRO_IP, false).apply();
+        sharedPreferences.edit().putBoolean(Constants.PREFERENCES_PREF_KEY_EXTERNAL_IP, Constants.PREFERENCES_PREF_KEY_EXTERNAL_IP_default).apply();
+        sharedPreferences.edit().putBoolean(Constants.PREFERENCES_PREF_KEY_ONLY_IP, Constants.PREFERENCES_PREF_KEY_ONLY_IP_default).apply();
+        sharedPreferences.edit().putBoolean(Constants.PREFERENCES_PREF_KEY_DISTRO_IP, Constants.PREFERENCES_PREF_KEY_DISTRO_IP_default).apply();
     }
 
 }

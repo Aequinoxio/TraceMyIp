@@ -40,7 +40,7 @@ public class ExternalIpAsyncTask extends AsyncTask <Void, Void, String> {
         StringBuilder sb = new StringBuilder();
         String line;
         try {
-            URL url = new URL("http://wtfismyip.com/text");
+            URL url = new URL("https://wtfismyip.com/text");
             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
             if (httpURLConnection.getResponseCode()!=-1) {
                 InputStream is = httpURLConnection.getInputStream();

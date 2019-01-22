@@ -112,9 +112,9 @@ class NetworkState implements NetworkUpdateCallback {
     public List<DataRow> getData() {
         dataAdapter.open();
         SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.PREFERENCES_NAME, Context.MODE_PRIVATE);
-        boolean selectType = sharedPreferences.getBoolean(Constants.PREFERENCES_PREF_KEY_EXTERNAL_IP, true);
-        boolean selectQuery = sharedPreferences.getBoolean(Constants.PREFERENCES_PREF_KEY_ONLY_IP, true);
-        boolean selectDistroQuery = sharedPreferences.getBoolean(Constants.PREFERENCES_PREF_KEY_DISTRO_IP, true);
+        boolean selectType = sharedPreferences.getBoolean(Constants.PREFERENCES_PREF_KEY_EXTERNAL_IP, Constants.PREFERENCES_PREF_KEY_EXTERNAL_IP_default);
+        boolean selectQuery = sharedPreferences.getBoolean(Constants.PREFERENCES_PREF_KEY_ONLY_IP, Constants.PREFERENCES_PREF_KEY_ONLY_IP_default);
+        boolean selectDistroQuery = sharedPreferences.getBoolean(Constants.PREFERENCES_PREF_KEY_DISTRO_IP, Constants.PREFERENCES_PREF_KEY_DISTRO_IP_default);
 
         String query;
         String columns;
@@ -210,7 +210,7 @@ class NetworkState implements NetworkUpdateCallback {
                         inetAddress = addressEnumeration.nextElement();
                         sAddr = inetAddress.getHostAddress();
                         if (sAddr.indexOf(':') < 0) {
-                            break;// Mi fermo al primno indirizzo IPv4 che trovo
+                            break;// Mi fermo al primo indirizzo IPv4 che trovo
                         }
                     }
                 } else {

@@ -33,5 +33,10 @@ public class BootReceiver extends BroadcastReceiver {
 
             jobScheduler.schedule(jBuilder.build());
         }
+
+        NetworkState networkState = NetworkState.getInstance(context);
+        networkState.updateState();
+
+        Utilities.getInstance().generateNotification(context);
     }
 }

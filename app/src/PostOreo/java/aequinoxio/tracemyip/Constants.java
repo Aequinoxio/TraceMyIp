@@ -23,8 +23,12 @@ public class Constants {
 
     public static final String PREFERENCES_NAME="aequinoxio.prefs";
     public static final String PREFERENCES_PREF_KEY_EXTERNAL_IP ="EXTERNAL_IP";
+    public static final boolean PREFERENCES_PREF_KEY_EXTERNAL_IP_default = false;
     public static final String PREFERENCES_PREF_KEY_ONLY_IP = "ONLY_IP";
+    public static final boolean PREFERENCES_PREF_KEY_ONLY_IP_default = false;
     public static final String PREFERENCES_PREF_KEY_DISTRO_IP = "DISTRO_IP_X_DATA";
+    public static final boolean PREFERENCES_PREF_KEY_DISTRO_IP_default = false;
+
 
     public static final String DIALOG_PARAM_DATA = "dialog.param.data";
     public static final String DIALOG_PARAM_IP = "dialog.param.ip";
@@ -35,6 +39,9 @@ public class Constants {
 
     // File di destinazione dove verrà copiato il DB
     public static final File DB_destination = new File(Constants.EXTERNAL_SD_SAVEPATH, Constants.DBNAME);
+
+    // Directory di salvataggio della copia del DB
+    public static final File DB_destination_directory = new File(Constants.EXTERNAL_SD_SAVEPATH);
 
     public static final int NOTIFICATION_ID = 123443;
     public static final int DIRECTORY_CHOOSER_INTENT_ID = 1238;

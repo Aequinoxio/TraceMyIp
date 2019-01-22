@@ -26,7 +26,7 @@
         android:title="@string/esporta_vista" />
     <item
         android:id="@+id/mnuExportDB"
-        android:title="@string/esporta_tutto_il_db" />
+        android:title="@string/salva_tutto_il_db" />
     <item
         android:id="@+id/mnuResetPrefs"
         android:title="@string/reset_preferences" />
