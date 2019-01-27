@@ -22,8 +22,8 @@ public class DataAdapter {
     private DatabaseHandler databaseHandler;
 
     public DataAdapter(Context context) {
-        Context mContext = context;
-        databaseHandler = new DatabaseHandler(mContext);
+        //Context mContext = context;
+        databaseHandler = new DatabaseHandler(context);
     }
 
     public DataAdapter createDatabase() throws SQLException {
@@ -112,9 +112,9 @@ public class DataAdapter {
 
     /**
      * Ritorna una lista delle stringhe per una select con singola colonna
-     * @param selectQuery
-     * @param whereValues
-     * @return
+     * @param selectQuery Query select
+     * @param whereValues filter values
+     * @return The values selected
      */
     public List<String> getValues(String selectQuery, String[] whereValues) {
         List<String> dataRows = new ArrayList<>();

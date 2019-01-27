@@ -2,7 +2,6 @@ package aequinoxio.tracemyip;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.BroadcastReceiver;
@@ -28,10 +27,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -57,8 +54,6 @@ public class MainActivity extends AppCompatActivity {
 
     private Context context;
     private BroadcastReceiver broadcastReceiver;
-    private DetailDialog detailDialog = new DetailDialog();;
-    //final File DB_destination = new File(Constants.EXTERNAL_SD_SAVEPATH, Constants.DBNAME);
 
     @Override
     protected void onPause() {
@@ -276,10 +271,21 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.mnuExportDB:
                 if (checkAndRequestPermission()) {
-                  //  final File DB_destination = new File(Constants.EXTERNAL_SD_SAVEPATH, Constants.DBNAME);
+                    //  final File DB_destination = new File(Constants.EXTERNAL_SD_SAVEPATH, Constants.DBNAME);
                     // Check esistenza directory ed eventuale creazione
-                    if (!Constants.DB_destination_directory.exists()){
-                        Constants.DB_destination_directory.mkdir();
+                    if (!Constants.DB_destination_directory.exists()) {
+                        if (!Constants.DB_destination_directory.mkdir()) {
+                            new AlertDialog.Builder(this)
+                                    .setTitle(getString(R.string.GENERIG_ERROR_TITLE))
+                                    .setMessage(getString(R.string.ERROR_Creating_log_dir))
+                                    .setIcon(android.R.drawable.ic_dialog_alert)
+                                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            dialog.cancel();
+                                        }
+                                    })
+                                    .show();
+                        }                        ;
                     }
 
                     // Check esistenza file
@@ -306,15 +312,6 @@ public class MainActivity extends AppCompatActivity {
                         exportAllDB();
                     }
                 }
-//                fileUri = Uri.fromFile(new File(DB_PATH));
-//                mResultIntent = new Intent(Intent.ACTION_SEND);
-//                if (fileUri != null) {
-//
-//                    mResultIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
-//                    mResultIntent.setType("*/*");
-//
-//                    startActivity(Intent.createChooser(mResultIntent, getResources().getText(R.string.send_to)));
-//                }
                 break;
 
             case R.id.mnuResetPrefs:
@@ -341,9 +338,7 @@ public class MainActivity extends AppCompatActivity {
     private void exportAllDB() {
         // TODO: Se possibile spostarlo nelle constants. Verificare come recuperare il contesto
         String DB_PATH = context.getDatabasePath(Constants.DBNAME).getAbsolutePath();
-        //File DOWNLOAD_FOLDER = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
         File DB_source = new File(DB_PATH);
-        //File DB_destination = new File(Constants.EXTERNAL_SD_SAVEPATH, Constants.DBNAME);
 
         try {
             FileChannel source = new FileInputStream(DB_source).getChannel();
@@ -351,8 +346,6 @@ public class MainActivity extends AppCompatActivity {
             destination.transferFrom(source, 0, source.size());
             source.close();
             destination.close();
-
-           // Toast.makeText(this, String.format(getString(R.string.export_DB_Confirm_toast),Constants.EXTERNAL_SD_SAVEPATH), Toast.LENGTH_LONG).show();
 
             // Alert dialog
             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);//, R.style.Theme_AppCompat_NoActionBar);
@@ -386,25 +379,6 @@ public class MainActivity extends AppCompatActivity {
                     });
 
             builder.show();
-
-
-//            new AlertDialog.Builder(MainActivity.this)
-//                    .setTitle(R.string.conferma)
-//                    .setMessage(R.string.sovrascrivo_file)
-//                    .setNegativeButton(R.string.annulla, new DialogInterface.OnClickListener() {
-//                        public void onClick(DialogInterface dialog, int id) {
-//                            dialog.cancel();
-//                        }
-//                    })
-//                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-//                        public void onClick(DialogInterface dialog, int id) {
-//                            exportAllDB();
-//                        }
-//                    })
-//                    .show();
-
-            /////
-
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -442,7 +416,6 @@ public class MainActivity extends AppCompatActivity {
 
     public boolean checkAndRequestPermission() {
         // Here, thisActivity is the current activity
-
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -482,10 +455,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private String exportToFile() {
-        Date date = new Date();
+       // Date date = new Date();
         File sd = new File(Constants.EXTERNAL_SD_SAVEPATH);
         File fileSalvataggio;
-        SimpleDateFormat ft = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
+       // SimpleDateFormat ft = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
 
         // Provo a creare la directory sulla sd
         boolean successCreaDir = true;
@@ -583,27 +556,18 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
                                            int pos, long id) {
-                SharedPreferences sharedPreferences = getSharedPreferences(Constants.PREFERENCES_NAME, MODE_PRIVATE);
-//                if(sharedPreferences.getBoolean(Constants.PREFERENCES_PREF_KEY_ONLY_IP, true)){
-//                    Toast.makeText(getApplicationContext(),"Verranno mostrati solo i gioni",Toast.LENGTH_LONG).show();
-//                    //return true; // Per ora tratto il caso di vista pe rsoli IP
-//                }
 
                 //Log.v("long clicked","pos: " + pos);
-                //detailDialog = new DetailDialog();
-
                 DataRow dataRow = (DataRow) arg0.getItemAtPosition(pos);
 
                 // Passo i parametri
                 Bundle args = new Bundle();
                 args.putString(Constants.DIALOG_PARAM_IP, dataRow.getIp());
                 args.putString(Constants.DIALOG_PARAM_DATA, dataRow.getData());
-                detailDialog.setArguments(args);
 
-                detailDialog.show(getFragmentManager(), "DetailsDialog");
-
-//                DetailDialog2 d2 = new DetailDialog2(getApplicationContext());
-//                d2.show();
+                Intent intent = new Intent(getApplicationContext(),DetailActivity.class);
+                intent.putExtras(args);
+                startActivity(intent);
                 return true;
             }
         });
@@ -611,36 +575,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void ckExternalIp(View view) {
-        // Is the view now checked?
-        boolean checked = ((CheckBox) view).isChecked();
-
-        // Check which checkbox was clicked
-        switch (view.getId()) {
-            case R.id.ckbDialogExIp:
-                detailDialog.updateListView(checked);
-
-                break;
-
-        }
-
-    }
-
-//    private boolean isMyServiceRunning(Class<?> serviceClass) {
-//        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-//        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-//            if (serviceClass.getName().equals(service.service.getClassName())) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
-
     private void resetPreferences() {
         SharedPreferences sharedPreferences = this.getSharedPreferences(Constants.PREFERENCES_NAME, MODE_PRIVATE);
         sharedPreferences.edit().putBoolean(Constants.PREFERENCES_PREF_KEY_EXTERNAL_IP, Constants.PREFERENCES_PREF_KEY_EXTERNAL_IP_default).apply();
         sharedPreferences.edit().putBoolean(Constants.PREFERENCES_PREF_KEY_ONLY_IP, Constants.PREFERENCES_PREF_KEY_ONLY_IP_default).apply();
         sharedPreferences.edit().putBoolean(Constants.PREFERENCES_PREF_KEY_DISTRO_IP, Constants.PREFERENCES_PREF_KEY_DISTRO_IP_default).apply();
     }
-
 }

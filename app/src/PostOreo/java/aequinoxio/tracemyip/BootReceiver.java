@@ -23,6 +23,11 @@ public class BootReceiver extends BroadcastReceiver {
         }
         */
 
+        // Evito di rispondere a tutti gli eventuali intent
+        if (!intent.getAction().equalsIgnoreCase(Intent.ACTION_BOOT_COMPLETED)){
+            return;
+        }
+
         // Check se il jobService è già in esecuzione
         if (!Utilities.getInstance().isMyJobServiceRunning(context,Constants.LOAD_IP_JOB_ID)) {
             JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);

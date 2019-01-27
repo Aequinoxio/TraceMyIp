@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!--&lt;!&ndash; TODO Remove the following "exclude" elements to make them a part of the auto backup &ndash;&gt;-->
+    <!--<exclude-->
+        <!--domain="database"-->
+        <!--path="logIp.db" />-->
+    <!--&lt;!&ndash; Exclude the shared preferences file that contains the GCM registrationId &ndash;&gt;-->
+    <!--<exclude-->
+        <!--domain="sharedpref"-->
+        <!--path="aequinoxio.prefs.xml" />-->
+</full-backup-content>
